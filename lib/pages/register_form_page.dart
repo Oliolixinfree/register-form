@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -21,6 +22,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _aboutYouController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  final List<String> _countries = ['Belarus', 'Ukraine', 'Germany', 'France'];
+  String? _selectedContry;
 
   @override
   void dispose() {
@@ -70,9 +74,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ),
               validator: _validateName,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _phoneController,
               decoration: InputDecoration(
@@ -107,9 +109,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   ? null
                   : 'Phone nuber must be entered as (###)###-####',
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -132,9 +132,40 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               keyboardType: TextInputType.emailAddress,
               validator: _validateEmail,
             ),
-            const SizedBox(
-              height: 10,
+            const SizedBox(height: 10),
+            DropdownButtonFormField(
+              decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.map),
+                  border: OutlineInputBorder(),
+                  labelText: 'Country'),
+              items: _countries.map((String country) {
+                return DropdownMenuItem(
+                  value: country,
+                  child: Row(
+                    children: [
+                      CountryFlag.fromCountryCode(
+                        'FR',
+                        height: 20,
+                        width: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(country),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (data) {
+                print(data);
+                setState(() {
+                  _selectedContry = data!;
+                });
+              },
+              value: _selectedContry,
+              validator: (val) {
+                return val == null ? 'Please select a country' : null;
+              },
             ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _aboutYouController,
               decoration: const InputDecoration(
@@ -159,9 +190,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 LengthLimitingTextInputFormatter(100),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _passwordController,
               obscureText: _hidePassword,
@@ -194,9 +223,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ),
               validator: _validatePassword,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: _confirmPasswordController,
               obscureText: _hidePassword,
@@ -229,9 +256,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ),
               validator: _validatePassword,
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitForm,
               child: const Text('Submit Form'),
@@ -249,6 +274,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       print('Name: ${_nameController.text}');
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
+      print('Country: $_selectedContry');
       print('About You: ${_aboutYouController.text}');
       print('Password: ${_passwordController.text}');
       print('Confirmed Password: ${_confirmPasswordController.text}');
