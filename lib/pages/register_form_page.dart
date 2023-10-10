@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
-import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:form_exapmle/models/user.dart';
+import 'package:form_exapmle/pages/user_info_page.dart';
 
 class RegisterFormPage extends StatefulWidget {
   const RegisterFormPage({super.key});
@@ -29,6 +30,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _nameFocus = FocusNode();
   final _phoneFocus = FocusNode();
   final _passwordFocus = FocusNode();
+
+  User newUser = User();
 
   @override
   void dispose() {
@@ -95,72 +98,73 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
               ),
               validator: _validateName,
+              onSaved: (value) => newUser.name = value!,
             ),
             const SizedBox(height: 10),
             TextFormField(
-              focusNode: _phoneFocus,
-              onFieldSubmitted: (_) {
-                _fieldFocusChange(context, _phoneFocus, _passwordFocus);
-              },
-              controller: _phoneController,
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                hintText: 'Where can we reach you?',
-                helperText: 'Phone format: (###)###-####',
-                prefixIcon: const Icon(Icons.call),
-                suffixIcon: GestureDetector(
-                  onTap: () => _phoneController.clear(),
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red[400],
+                focusNode: _phoneFocus,
+                onFieldSubmitted: (_) {
+                  _fieldFocusChange(context, _phoneFocus, _passwordFocus);
+                },
+                controller: _phoneController,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  hintText: 'Where can we reach you?',
+                  helperText: 'Phone format: (###)###-####',
+                  prefixIcon: const Icon(Icons.call),
+                  suffixIcon: GestureDetector(
+                    onTap: () => _phoneController.clear(),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Colors.red[400],
+                    ),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.deepPurple),
                   ),
                 ),
-                enabledBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                  borderSide: BorderSide(color: Colors.deepPurple),
-                ),
-              ),
-              keyboardType: TextInputType.phone,
-              inputFormatters: [
-                // FilteringTextInputFormatter.digitsOnly,
-                FilteringTextInputFormatter(RegExp(r'^[()\d -]{1,15}$'),
-                    allow: true),
-              ],
-              validator: (value) => _validatePhoneNumber(value)
-                  ? null
-                  : 'Phone nuber must be entered as (###)###-####',
-            ),
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  // FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter(RegExp(r'^[()\d -]{1,15}$'),
+                      allow: true),
+                ],
+                validator: (value) => _validatePhoneNumber(value)
+                    ? null
+                    : 'Phone nuber must be entered as (###)###-####',
+                onSaved: (value) => newUser.phone = value!),
             const SizedBox(height: 10),
             TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'Enter your email address',
-                prefixIcon: Icon(Icons.mail),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'Enter your email address',
+                  prefixIcon: Icon(Icons.mail),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.deepPurple),
                   ),
-                  borderSide: BorderSide(color: Colors.deepPurple),
                 ),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              validator: _validateEmail,
-            ),
+                keyboardType: TextInputType.emailAddress,
+                validator: _validateEmail,
+                onSaved: (value) => newUser.email = value!),
             const SizedBox(height: 10),
             DropdownButtonFormField(
               decoration: const InputDecoration(
@@ -170,23 +174,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               items: _countries.map((String country) {
                 return DropdownMenuItem(
                   value: country,
-                  child: Row(
-                    children: [
-                      CountryFlag.fromCountryCode(
-                        'FR',
-                        height: 20,
-                        width: 20,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(country),
-                    ],
-                  ),
+                  child: Text(country),
                 );
               }).toList(),
-              onChanged: (data) {
-                print(data);
+              onChanged: (country) {
+                print(country);
                 setState(() {
-                  _selectedContry = data!;
+                  _selectedContry = country!;
+                  newUser.country = country;
                 });
               },
               value: _selectedContry,
@@ -196,29 +191,29 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             const SizedBox(height: 10),
             TextFormField(
-              controller: _aboutYouController,
-              decoration: const InputDecoration(
-                labelText: 'About You',
-                hintText: 'Tell us about yourself',
-                helperText: 'Keep it short, this is just a demo',
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
+                controller: _aboutYouController,
+                decoration: const InputDecoration(
+                  labelText: 'About You',
+                  hintText: 'Tell us about yourself',
+                  helperText: 'Keep it short, this is just a demo',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.deepPurple),
                   ),
-                  borderSide: BorderSide(color: Colors.deepPurple),
                 ),
-              ),
-              maxLines: 3,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(100),
-              ],
-            ),
+                maxLines: 3,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(100),
+                ],
+                onSaved: (value) => newUser.about = value!),
             const SizedBox(height: 10),
             TextFormField(
               focusNode: _passwordFocus,
@@ -386,6 +381,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserInfoPage(
+                        userInfo: newUser,
+                      ),
+                    ),
+                  );
                 },
                 child: const Text('Verified'),
               ),
