@@ -26,6 +26,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final List<String> _countries = ['Belarus', 'Ukraine', 'Germany', 'France'];
   String? _selectedContry;
 
+
+  final _nameFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -34,7 +39,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _aboutYouController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nameFocus.dispose();
+    _phoneFocus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
+  }
+
+  void _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -50,6 +63,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           padding: const EdgeInsets.all(16),
           children: [
             TextFormField(
+              focusNode: _nameFocus,
+              autofocus: true,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _nameFocus, _phoneFocus);
+              },
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Full Name',
@@ -76,6 +94,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             const SizedBox(height: 10),
             TextFormField(
+              focusNode: _phoneFocus,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _phoneFocus, _passwordFocus);
+              },
               controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
@@ -192,6 +214,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             const SizedBox(height: 10),
             TextFormField(
+              focusNode: _passwordFocus,
               controller: _passwordController,
               obscureText: _hidePassword,
               maxLength: 8,
