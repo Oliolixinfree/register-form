@@ -15,6 +15,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   bool _hidePassword = true;
 
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -25,7 +26,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   final List<String> _countries = ['Belarus', 'Ukraine', 'Germany', 'France'];
   String? _selectedContry;
-
 
   final _nameFocus = FocusNode();
   final _phoneFocus = FocusNode();
@@ -45,7 +45,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     super.dispose();
   }
 
-  void _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
@@ -53,6 +54,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Register Form'),
         centerTitle: true,
@@ -302,7 +304,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       print('Password: ${_passwordController.text}');
       print('Confirmed Password: ${_confirmPasswordController.text}');
     } else {
-      print('Form is not valid! Please review and correct');
+      _showMessage(message: 'Form is not valid! Please review and correct');
     }
   }
 
@@ -341,5 +343,22 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     } else {
       return null;
     }
+  }
+
+  void _showMessage({required String message}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: 4),
+        backgroundColor: Colors.red[400],
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
+      ),
+    );
   }
 }
