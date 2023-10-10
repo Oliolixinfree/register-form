@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -295,7 +294,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      print('Form is valid');
+      _showDialog(name: _nameController.text);
       print('Name: ${_nameController.text}');
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
@@ -348,7 +347,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   void _showMessage({required String message}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(seconds: 4),
+        duration: const Duration(seconds: 4),
         backgroundColor: Colors.red[400],
         content: Text(
           message,
@@ -360,5 +359,32 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         ),
       ),
     );
+  }
+
+  void _showDialog({String? name}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Registration Successful'),
+            content: Row(
+              children: [
+                Text(
+                  '$name ',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const Text('is now a verified register form')
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Verified'),
+              ),
+            ],
+          );
+        });
   }
 }
